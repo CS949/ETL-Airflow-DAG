@@ -1,19 +1,17 @@
 def run_etl():
-    # Paste your entire ETL logic here, and indent it inside this function
+    
     import pandas as pd
     import matplotlib.pyplot as plt
     import os
 
     os.makedirs("reports", exist_ok=True)
 
-    # === Begin original logic ===
     orders = pd.read_csv("data/orders.csv")
     order_items = pd.read_csv("data/order_items.csv")
     customers = pd.read_csv("data/customers.csv")
     reviews = pd.read_csv("data/order_reviews.csv")
     payments = pd.read_csv("data/order_payments.csv")
 
-    # Basic KPIs
     total_orders = len(orders)
     total_customers = customers['customer_id'].nunique()
     average_review_score = reviews['review_score'].mean()
@@ -23,8 +21,7 @@ def run_etl():
     print("Total Customers:", total_customers)
     print("Average Review Score:", round(average_review_score, 2))
     print("Total Items Sold:", total_items_sold)
-
-    # Advanced KPI: CLV
+    
     merged = orders.merge(order_items, on="order_id")
     merged = merged.merge(payments, on="order_id")
     merged = merged.merge(customers, on="customer_id")
@@ -34,18 +31,15 @@ def run_etl():
     average_clv = clv_df['CLV'].mean()
     print("Average CLV:", round(average_clv, 2))
 
-    # Advanced KPI: Return Rate
     returned_orders = orders[orders['order_status'] != 'delivered']
     return_rate = len(returned_orders) / len(orders)
     print("Return Rate:", round(return_rate * 100, 2), "%")
 
-    # Advanced KPI: Sales by State
     orders_with_customers = orders.merge(customers, on="customer_id")
     orders_items_region = orders_with_customers.merge(order_items, on="order_id")
     sales_by_state = orders_items_region.groupby("customer_state")["price"].sum().sort_values(ascending=False)
     print("Top 5 States by Sales:\n", sales_by_state.head())
 
-    # Visualization 1
     plt.figure(figsize=(14, 6))
     sales_by_state.plot(kind='bar', color='skyblue')
     plt.title("Total Sales by State")
@@ -55,7 +49,6 @@ def run_etl():
     plt.savefig("reports/sales_by_state.png")
     plt.close()
 
-    # Visualization 2
     top_10_clv = clv_df.sort_values("CLV", ascending=False).head(10)
     plt.figure(figsize=(10, 6))
     plt.barh(top_10_clv['customer_unique_id'], top_10_clv['CLV'], color='green')
@@ -65,6 +58,5 @@ def run_etl():
     plt.savefig("reports/top_10_clv_customers.png")
     plt.close()
 
-# Optional: for local testing
 if __name__ == "__main__":
     run_etl()
