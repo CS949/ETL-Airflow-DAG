@@ -4,11 +4,10 @@ from datetime import datetime
 import sys
 import os
 
-# Add the root project directory to sys.path so we can import etl_olist_project
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(PROJECT_PATH)
 
-from etl_olist_project import run_etl  # You must wrap your code inside run_etl() function
+from etl_olist_project import run_etl
 
 default_args = {
     'owner': 'chaitanya',
